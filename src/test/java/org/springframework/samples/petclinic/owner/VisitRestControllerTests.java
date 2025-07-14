@@ -44,251 +44,252 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(VisitRestController.class)
 class VisitRestControllerTests {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @MockitoBean
-    private VisitRepository visitRepository;
+	@MockitoBean
+	private VisitRepository visitRepository;
 
-    @MockitoBean
-    private PetRepository petRepository;
+	@MockitoBean
+	private PetRepository petRepository;
 
-    @BeforeEach
-    void setup() {
-        JacksonTester.initFields(this, new ObjectMapper());
-    }
+	@BeforeEach
+	void setup() {
+		JacksonTester.initFields(this, new ObjectMapper());
+	}
 
-    @Test
-    void testGetAllVisits() throws Exception {
-        // given
-        Visit visit1 = new Visit();
-        visit1.setId(1);
-        visit1.setDate(LocalDate.of(2023, 1, 1));
-        visit1.setDescription("Annual checkup");
+	@Test
+	void testGetAllVisits() throws Exception {
+		// given
+		Visit visit1 = new Visit();
+		visit1.setId(1);
+		visit1.setDate(LocalDate.of(2023, 1, 1));
+		visit1.setDescription("Annual checkup");
 
-        Visit visit2 = new Visit();
-        visit2.setId(2);
-        visit2.setDate(LocalDate.of(2023, 2, 15));
-        visit2.setDescription("Rabies vaccination");
+		Visit visit2 = new Visit();
+		visit2.setId(2);
+		visit2.setDate(LocalDate.of(2023, 2, 15));
+		visit2.setDescription("Rabies vaccination");
 
-        List<Visit> visits = Arrays.asList(visit1, visit2);
-        given(this.visitRepository.findAll()).willReturn(visits);
+		List<Visit> visits = Arrays.asList(visit1, visit2);
+		given(this.visitRepository.findAll()).willReturn(visits);
 
-        // when
-        mockMvc.perform(get("/api/visits"))
-            // then
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].id", is(1)))
-            .andExpect(jsonPath("$[0].date", is("2023-01-01")))
-            .andExpect(jsonPath("$[0].description", is("Annual checkup")))
-            .andExpect(jsonPath("$[1].id", is(2)))
-            .andExpect(jsonPath("$[1].date", is("2023-02-15")))
-            .andExpect(jsonPath("$[1].description", is("Rabies vaccination")));
-    }
+		// when
+		mockMvc.perform(get("/api/visits"))
+			// then
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$", hasSize(2)))
+			.andExpect(jsonPath("$[0].id", is(1)))
+			.andExpect(jsonPath("$[0].date", is("2023-01-01")))
+			.andExpect(jsonPath("$[0].description", is("Annual checkup")))
+			.andExpect(jsonPath("$[1].id", is(2)))
+			.andExpect(jsonPath("$[1].date", is("2023-02-15")))
+			.andExpect(jsonPath("$[1].description", is("Rabies vaccination")));
+	}
 
-    @Test
-    void testGetVisit() throws Exception {
-        // given
-        Visit visit = new Visit();
-        visit.setId(1);
-        visit.setDate(LocalDate.of(2023, 1, 1));
-        visit.setDescription("Annual checkup");
+	@Test
+	void testGetVisit() throws Exception {
+		// given
+		Visit visit = new Visit();
+		visit.setId(1);
+		visit.setDate(LocalDate.of(2023, 1, 1));
+		visit.setDescription("Annual checkup");
 
-        given(this.visitRepository.findById(1)).willReturn(Optional.of(visit));
+		given(this.visitRepository.findById(1)).willReturn(Optional.of(visit));
 
-        // when
-        mockMvc.perform(get("/api/visits/1"))
-            // then
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.id", is(1)))
-            .andExpect(jsonPath("$.date", is("2023-01-01")))
-            .andExpect(jsonPath("$.description", is("Annual checkup")));
-    }
+		// when
+		mockMvc.perform(get("/api/visits/1"))
+			// then
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$.id", is(1)))
+			.andExpect(jsonPath("$.date", is("2023-01-01")))
+			.andExpect(jsonPath("$.description", is("Annual checkup")));
+	}
 
-    @Test
-    void testGetVisitNotFound() throws Exception {
-        // given
-        given(this.visitRepository.findById(999)).willReturn(Optional.empty());
+	@Test
+	void testGetVisitNotFound() throws Exception {
+		// given
+		given(this.visitRepository.findById(999)).willReturn(Optional.empty());
 
-        // when
-        mockMvc.perform(get("/api/visits/999"))
-            // then
-            .andExpect(status().isNotFound());
-    }
+		// when
+		mockMvc.perform(get("/api/visits/999"))
+			// then
+			.andExpect(status().isNotFound());
+	}
 
-    @Test
-    void testGetVisitsByPet() throws Exception {
-        // given
-        Visit visit1 = new Visit();
-        visit1.setId(1);
-        visit1.setDate(LocalDate.of(2023, 1, 1));
-        visit1.setDescription("Annual checkup");
+	@Test
+	void testGetVisitsByPet() throws Exception {
+		// given
+		Visit visit1 = new Visit();
+		visit1.setId(1);
+		visit1.setDate(LocalDate.of(2023, 1, 1));
+		visit1.setDescription("Annual checkup");
 
-        Visit visit2 = new Visit();
-        visit2.setId(2);
-        visit2.setDate(LocalDate.of(2023, 2, 15));
-        visit2.setDescription("Rabies vaccination");
+		Visit visit2 = new Visit();
+		visit2.setId(2);
+		visit2.setDate(LocalDate.of(2023, 2, 15));
+		visit2.setDescription("Rabies vaccination");
 
-        List<Visit> visits = Arrays.asList(visit1, visit2);
-        given(this.petRepository.existsById(1)).willReturn(true);
-        given(this.visitRepository.findByPetId(1)).willReturn(visits);
+		List<Visit> visits = Arrays.asList(visit1, visit2);
+		given(this.petRepository.existsById(1)).willReturn(true);
+		given(this.visitRepository.findByPetId(1)).willReturn(visits);
 
-        // when
-        mockMvc.perform(get("/api/pets/1/visits"))
-            // then
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].id", is(1)))
-            .andExpect(jsonPath("$[0].date", is("2023-01-01")))
-            .andExpect(jsonPath("$[0].description", is("Annual checkup")))
-            .andExpect(jsonPath("$[1].id", is(2)))
-            .andExpect(jsonPath("$[1].date", is("2023-02-15")))
-            .andExpect(jsonPath("$[1].description", is("Rabies vaccination")));
-    }
+		// when
+		mockMvc.perform(get("/api/pets/1/visits"))
+			// then
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(MediaType.APPLICATION_JSON))
+			.andExpect(jsonPath("$", hasSize(2)))
+			.andExpect(jsonPath("$[0].id", is(1)))
+			.andExpect(jsonPath("$[0].date", is("2023-01-01")))
+			.andExpect(jsonPath("$[0].description", is("Annual checkup")))
+			.andExpect(jsonPath("$[1].id", is(2)))
+			.andExpect(jsonPath("$[1].date", is("2023-02-15")))
+			.andExpect(jsonPath("$[1].description", is("Rabies vaccination")));
+	}
 
-    @Test
-    void testGetVisitsByPetNotFound() throws Exception {
-        // given
-        given(this.petRepository.existsById(999)).willReturn(false);
+	@Test
+	void testGetVisitsByPetNotFound() throws Exception {
+		// given
+		given(this.petRepository.existsById(999)).willReturn(false);
 
-        // when
-        mockMvc.perform(get("/api/pets/999/visits"))
-            // then
-            .andExpect(status().isNotFound());
-    }
+		// when
+		mockMvc.perform(get("/api/pets/999/visits"))
+			// then
+			.andExpect(status().isNotFound());
+	}
 
-    @Test
-    void testAddVisit() throws Exception {
-        // given
-        Pet pet = new Pet();
-        pet.setId(1);
-        pet.setName("Leo");
+	@Test
+	void testAddVisit() throws Exception {
+		// given
+		Pet pet = new Pet();
+		pet.setId(1);
+		pet.setName("Leo");
 
-        Visit newVisit = new Visit();
-        newVisit.setDate(LocalDate.of(2023, 3, 10));
-        newVisit.setDescription("Dental cleaning");
+		Visit newVisit = new Visit();
+		newVisit.setDate(LocalDate.of(2023, 3, 10));
+		newVisit.setDescription("Dental cleaning");
 
-        given(this.petRepository.findById(1)).willReturn(Optional.of(pet));
-        given(this.petRepository.save(any(Pet.class))).willAnswer(invocation -> {
-            Pet savedPet = invocation.getArgument(0);
-            Visit savedVisit = savedPet.getVisits().iterator().next();
-            savedVisit.setId(5);
-            return savedPet;
-        });
+		given(this.petRepository.findById(1)).willReturn(Optional.of(pet));
+		given(this.petRepository.save(any(Pet.class))).willAnswer(invocation -> {
+			Pet savedPet = invocation.getArgument(0);
+			Visit savedVisit = savedPet.getVisits().iterator().next();
+			savedVisit.setId(5);
+			return savedPet;
+		});
 
-        // when
-        mockMvc.perform(post("/api/pets/1/visits")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"date\":\"2023-03-10\",\"description\":\"Dental cleaning\"}"))
-            // then
-            .andExpect(status().isCreated())
-            .andExpect(header().string("Location", containsString("/api/pets/1/visits/5")))
-            .andExpect(jsonPath("$.date", is("2023-03-10")))
-            .andExpect(jsonPath("$.description", is("Dental cleaning")));
+		// when
+		mockMvc
+			.perform(post("/api/pets/1/visits").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"date\":\"2023-03-10\",\"description\":\"Dental cleaning\"}"))
+			// then
+			.andExpect(status().isCreated())
+			.andExpect(header().string("Location", containsString("/api/pets/1/visits/5")))
+			.andExpect(jsonPath("$.date", is("2023-03-10")))
+			.andExpect(jsonPath("$.description", is("Dental cleaning")));
 
-        verify(this.petRepository).save(any(Pet.class));
-    }
+		verify(this.petRepository).save(any(Pet.class));
+	}
 
-    @Test
-    void testAddVisitPetNotFound() throws Exception {
-        // given
-        given(this.petRepository.findById(999)).willReturn(Optional.empty());
+	@Test
+	void testAddVisitPetNotFound() throws Exception {
+		// given
+		given(this.petRepository.findById(999)).willReturn(Optional.empty());
 
-        // when
-        mockMvc.perform(post("/api/pets/999/visits")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"date\":\"2023-03-10\",\"description\":\"Dental cleaning\"}"))
-            // then
-            .andExpect(status().isNotFound());
+		// when
+		mockMvc
+			.perform(post("/api/pets/999/visits").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"date\":\"2023-03-10\",\"description\":\"Dental cleaning\"}"))
+			// then
+			.andExpect(status().isNotFound());
 
-        verify(this.petRepository, never()).save(any(Pet.class));
-    }
+		verify(this.petRepository, never()).save(any(Pet.class));
+	}
 
-    @Test
-    void testAddVisitInvalidDescription() throws Exception {
-        // given
-        Pet pet = new Pet();
-        pet.setId(1);
-        pet.setName("Leo");
+	@Test
+	void testAddVisitInvalidDescription() throws Exception {
+		// given
+		Pet pet = new Pet();
+		pet.setId(1);
+		pet.setName("Leo");
 
-        given(this.petRepository.findById(1)).willReturn(Optional.of(pet));
+		given(this.petRepository.findById(1)).willReturn(Optional.of(pet));
 
-        // when
-        mockMvc.perform(post("/api/pets/1/visits")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"date\":\"2023-03-10\",\"description\":\"\"}"))
-            // then
-            .andExpect(status().isBadRequest());
+		// when
+		mockMvc
+			.perform(post("/api/pets/1/visits").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"date\":\"2023-03-10\",\"description\":\"\"}"))
+			// then
+			.andExpect(status().isBadRequest());
 
-        verify(this.petRepository, never()).save(any(Pet.class));
-    }
+		verify(this.petRepository, never()).save(any(Pet.class));
+	}
 
-    @Test
-    void testUpdateVisit() throws Exception {
-        // given
-        Visit visit = new Visit();
-        visit.setId(1);
-        visit.setDate(LocalDate.of(2023, 1, 1));
-        visit.setDescription("Annual checkup");
+	@Test
+	void testUpdateVisit() throws Exception {
+		// given
+		Visit visit = new Visit();
+		visit.setId(1);
+		visit.setDate(LocalDate.of(2023, 1, 1));
+		visit.setDescription("Annual checkup");
 
-        given(this.visitRepository.findById(1)).willReturn(Optional.of(visit));
-        given(this.visitRepository.save(any(Visit.class))).willAnswer(invocation -> invocation.getArgument(0));
+		given(this.visitRepository.findById(1)).willReturn(Optional.of(visit));
+		given(this.visitRepository.save(any(Visit.class))).willAnswer(invocation -> invocation.getArgument(0));
 
-        // when
-        mockMvc.perform(put("/api/visits/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"date\":\"2023-01-02\",\"description\":\"Annual checkup updated\"}"))
-            // then
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.id", is(1)))
-            .andExpect(jsonPath("$.date", is("2023-01-02")))
-            .andExpect(jsonPath("$.description", is("Annual checkup updated")));
+		// when
+		mockMvc
+			.perform(put("/api/visits/1").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"date\":\"2023-01-02\",\"description\":\"Annual checkup updated\"}"))
+			// then
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.id", is(1)))
+			.andExpect(jsonPath("$.date", is("2023-01-02")))
+			.andExpect(jsonPath("$.description", is("Annual checkup updated")));
 
-        verify(this.visitRepository).save(any(Visit.class));
-    }
+		verify(this.visitRepository).save(any(Visit.class));
+	}
 
-    @Test
-    void testUpdateVisitNotFound() throws Exception {
-        // given
-        given(this.visitRepository.findById(999)).willReturn(Optional.empty());
+	@Test
+	void testUpdateVisitNotFound() throws Exception {
+		// given
+		given(this.visitRepository.findById(999)).willReturn(Optional.empty());
 
-        // when
-        mockMvc.perform(put("/api/visits/999")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"date\":\"2023-01-02\",\"description\":\"Annual checkup updated\"}"))
-            // then
-            .andExpect(status().isNotFound());
+		// when
+		mockMvc
+			.perform(put("/api/visits/999").contentType(MediaType.APPLICATION_JSON)
+				.content("{\"date\":\"2023-01-02\",\"description\":\"Annual checkup updated\"}"))
+			// then
+			.andExpect(status().isNotFound());
 
-        verify(this.visitRepository, never()).save(any(Visit.class));
-    }
+		verify(this.visitRepository, never()).save(any(Visit.class));
+	}
 
-    @Test
-    void testDeleteVisit() throws Exception {
-        // given
-        given(this.visitRepository.existsById(1)).willReturn(true);
+	@Test
+	void testDeleteVisit() throws Exception {
+		// given
+		given(this.visitRepository.existsById(1)).willReturn(true);
 
-        // when
-        mockMvc.perform(delete("/api/visits/1"))
-            // then
-            .andExpect(status().isNoContent());
+		// when
+		mockMvc.perform(delete("/api/visits/1"))
+			// then
+			.andExpect(status().isNoContent());
 
-        verify(this.visitRepository).deleteById(1);
-    }
+		verify(this.visitRepository).deleteById(1);
+	}
 
-    @Test
-    void testDeleteVisitNotFound() throws Exception {
-        // given
-        given(this.visitRepository.existsById(999)).willReturn(false);
+	@Test
+	void testDeleteVisitNotFound() throws Exception {
+		// given
+		given(this.visitRepository.existsById(999)).willReturn(false);
 
-        // when
-        mockMvc.perform(delete("/api/visits/999"))
-            // then
-            .andExpect(status().isNotFound());
+		// when
+		mockMvc.perform(delete("/api/visits/999"))
+			// then
+			.andExpect(status().isNotFound());
 
-        verify(this.visitRepository, never()).deleteById(anyInt());
-    }
+		verify(this.visitRepository, never()).deleteById(anyInt());
+	}
+
 }

@@ -73,8 +73,7 @@ public class PetRestController {
 	@GetMapping("/pets/{petId}")
 	public ResponseEntity<Pet> getPet(@PathVariable("petId") int petId) {
 		Optional<Pet> pet = this.petRepository.findById(petId);
-		return pet.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+		return pet.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
 	/**
@@ -116,7 +115,8 @@ public class PetRestController {
 
 		// Check for duplicate pet name
 		if (owner.getPet(pet.getName(), true) != null) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Pet with name '" + pet.getName() + "' already exists for this owner");
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body("Pet with name '" + pet.getName() + "' already exists for this owner");
 		}
 
 		// Add pet to owner
@@ -125,9 +125,9 @@ public class PetRestController {
 
 		// Create URI for the new resource
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-				.path("/{id}")
-				.buildAndExpand(pet.getId())
-				.toUri();
+			.path("/{id}")
+			.buildAndExpand(pet.getId())
+			.toUri();
 
 		return ResponseEntity.created(location).body(pet);
 	}
@@ -163,7 +163,8 @@ public class PetRestController {
 
 		// Check for duplicate pet name if name is being changed
 		if (!pet.getName().equals(petDetails.getName()) && petOwner.getPet(petDetails.getName(), false) != null) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Pet with name '" + petDetails.getName() + "' already exists for this owner");
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+				.body("Pet with name '" + petDetails.getName() + "' already exists for this owner");
 		}
 
 		// Update pet

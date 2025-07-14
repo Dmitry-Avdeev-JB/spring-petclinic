@@ -58,10 +58,8 @@ public class OwnerRestController {
 	 * @return a list of owners
 	 */
 	@GetMapping
-	public ResponseEntity<Page<Owner>> getOwners(
-			@RequestParam(required = false) String lastName,
-			@RequestParam(defaultValue = "1") int page,
-			@RequestParam(defaultValue = "10") int size) {
+	public ResponseEntity<Page<Owner>> getOwners(@RequestParam(required = false) String lastName,
+			@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "10") int size) {
 
 		Pageable pageable = PageRequest.of(page - 1, size);
 		Page<Owner> owners;
@@ -84,8 +82,7 @@ public class OwnerRestController {
 	@GetMapping("/{ownerId}")
 	public ResponseEntity<Owner> getOwner(@PathVariable("ownerId") int ownerId) {
 		Optional<Owner> owner = this.ownerRepository.findById(ownerId);
-		return owner.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+		return owner.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
 	/**
@@ -102,9 +99,9 @@ public class OwnerRestController {
 		Owner savedOwner = this.ownerRepository.save(owner);
 
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-				.path("/{id}")
-				.buildAndExpand(savedOwner.getId())
-				.toUri();
+			.path("/{id}")
+			.buildAndExpand(savedOwner.getId())
+			.toUri();
 
 		return ResponseEntity.created(location).body(savedOwner);
 	}
@@ -116,7 +113,8 @@ public class OwnerRestController {
 	 * @return the updated owner
 	 */
 	@PutMapping("/{ownerId}")
-	public ResponseEntity<Object> updateOwner(@PathVariable("ownerId") int ownerId, @Valid @RequestBody Owner ownerDetails) {
+	public ResponseEntity<Object> updateOwner(@PathVariable("ownerId") int ownerId,
+			@Valid @RequestBody Owner ownerDetails) {
 		Optional<Owner> optionalOwner = this.ownerRepository.findById(ownerId);
 		if (optionalOwner.isEmpty()) {
 			return ResponseEntity.notFound().build();

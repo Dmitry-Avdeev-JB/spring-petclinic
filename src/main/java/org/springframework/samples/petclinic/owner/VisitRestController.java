@@ -68,8 +68,7 @@ public class VisitRestController {
 	@GetMapping("/visits/{visitId}")
 	public ResponseEntity<Visit> getVisit(@PathVariable("visitId") int visitId) {
 		Optional<Visit> visit = this.visitRepository.findById(visitId);
-		return visit.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+		return visit.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
 	/**
@@ -115,9 +114,9 @@ public class VisitRestController {
 
 		// Create URI for the new resource
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-				.path("/{id}")
-				.buildAndExpand(visit.getId())
-				.toUri();
+			.path("/{id}")
+			.buildAndExpand(visit.getId())
+			.toUri();
 
 		return ResponseEntity.created(location).body(visit);
 	}
@@ -129,7 +128,8 @@ public class VisitRestController {
 	 * @return the updated visit
 	 */
 	@PutMapping("/visits/{visitId}")
-	public ResponseEntity<Object> updateVisit(@PathVariable("visitId") int visitId, @Valid @RequestBody Visit visitDetails) {
+	public ResponseEntity<Object> updateVisit(@PathVariable("visitId") int visitId,
+			@Valid @RequestBody Visit visitDetails) {
 		Optional<Visit> optionalVisit = this.visitRepository.findById(visitId);
 		if (optionalVisit.isEmpty()) {
 			return ResponseEntity.notFound().build();
